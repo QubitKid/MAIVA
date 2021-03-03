@@ -14,6 +14,7 @@ Current capabilities as of 3/3/21:
 * tell a fact
 * tell something interesting
 * alter user name
+* current time read out
   
 
 Building started 2/3/21.
