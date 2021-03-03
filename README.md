@@ -5,6 +5,7 @@ Development in progress to control smart devices, play music, answer general que
 Also plan to build up resilience to tonal changes over time.
 
 Current capabilities as of 3/3/21:
+
 *date readout
 *name readout
 *MAIVA introduce herself
