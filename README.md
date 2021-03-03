@@ -10,6 +10,7 @@ Current capabilities as of 3/3/21:
 * name readout
 * MAIVA introduce herself
 * change wake word
+* general greetings
 * tell a joke
 * tell a fact
 * tell something interesting
