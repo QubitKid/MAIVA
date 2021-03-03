@@ -6,8 +6,9 @@ from playsound import playsound as maiva_say
 import time
 import speech_recognition as sr
 from datetime import date
+import datetime
 import random
-import json
+#from capabilities import tell_fact
 
 #initialise MAIVA engine
 maiva_engine = MAIVA.TextToSpeechClient()
@@ -30,6 +31,10 @@ auto_google = "google"
 voice_recognition = sr.Recognizer()
 mic = sr.Microphone()
 legible = False
+
+
+
+
 
 
 
@@ -108,46 +113,63 @@ def listen():
                     print("Request: " + str(command))
                     brain(command)
                 else:
-                    print("I can't understand that, sorry.")
+                    print("Wake word not detected sorry")
     
     print("It was nice being real.")
     
     
     
-def question_reply():
-    
-    #used to specifically listen for a reply to a MAIVA question outside main program loop!
-    
+def question_reply(keyword):
     pass
-    
-    
+    #used to specifically listen for a reply to a MAIVA question outside main program loop!
+    with mic as source:
+        voice_recognition.adjust_for_ambient_noise(source)
+        voice_recognition.energy_threshold = 4000
+
+        audio = voice_recognition.listen(source)
+        try:
+            command = voice_recognition.recognize_google(audio, language="en-GB")
+            legible = True
+        except:
+            legible = False
+            
+        if legible:
+            #check if the legible sentence contains the wake word
+            if (keyword in command.lower()):
+                pass
     
     
 #process legible command    
 def brain(command):
-    
+    opening_remarks = open('./resources/opening_remarks.txt')
+    opening_remarks_lines = opening_remarks.readlines()
     ##could have a list of opening remarks to randomly choose from or skip here
     #makes the system seem more intuitive
-    speak("Let me see")
-    
+    random_int = random.randint(0, 2)
+
+    #greeting to be used for more complex classes of replies
+    greeting = str(opening_remarks_lines[random_int])
+    opening_remarks.close()
     #ensure access to the correct variable
     global client_name
     global wake_word
     
     #date query
     if ("the date" in command) or ("what's the date" in command) or ("today's date" in command):
+        speak(greeting)
         speak("The date today is " + str(date.today()))
     elif ("power down" in command) or ("shut down" in command) or ("power off" in command) or ("die " + str(wake_word) + "" in command):
         toggle_system_life(False)
         speak("Certainly")
     elif("what's my name" in command) or ("what is my name" in command) or ("tell me my name" in command):
         if client_name == ".":
-            speak("You haven't told me your name yet")
+            speak("I wish I knew. Please tell me.")
         else:
             speak("You've asked me to call you " + str(client_name))
     elif("what's your name" in command) or ("what is your name" in command) or ("tell me your name" in command) or ("what are you called" in command):
-        speak("My name is Mayva. I'm the mashka artificially intelligent voice assistant")
+        speak("My name is Mayva. I'm mashka the artificially intelligent voice assistant")
     elif("set my name to" in command) or ("my name is" in command) or ("set name as" in command) or ("you can call me" in command):
+        speak(greeting)
         words = command.split()
         temp_client_name = ""
         if(words[len(words) -1] == wake_word):
@@ -156,10 +178,12 @@ def brain(command):
             temp_client_name = words[len(words) - 1]
         if any(char.isdigit() for char in temp_client_name) == False:
             client_name = temp_client_name
-            speak("I'll call you " + str(client_name) + " then")
+            speak("I'll call you " + str(client_name) + " from now on")
         else:
             speak("I had difficulty understanding that")        
     elif("set wake word to" in command) or ("wake up to" in command) or ("new wake word is" in command):
+        speak(greeting)
+
         words = command.split()
         if(words[len(words) -1] == wake_word):
             temp_wake_word = words[len(words) - 2]
@@ -177,51 +201,106 @@ def brain(command):
         os.system(bashCommand)
     elif("something interesting" in command) or ("something cool" in command):
         #generate random number
-        f = open('./resources/coolstuff.txt')
-        interesting = ""
-        lines = f.readlines()
-        #ensure MAIVA responds with something
-        while interesting == "":
-            random_number = random.randint(0, 75)
-            interesting = str(lines[random_number])
-        speak(interesting)
+        tell_random()
     elif("something funny" in command) or ("tell me a joke" in command) or ("make me laugh" in command) or ("cheer me up" in command):
-        #generate random number
-        f = open('./resources/jokes.txt')
-        joke = ""
-        lines = f.readlines()
-        #ensure MAIVA responds with something
-        while True:
+        tell_joke()
+    elif("tell me a fact" in command) or ("give me a fact" in command) or ("let's hear a fact" in command) or ("a cool fact" in command):
+        speak(greeting)
+        tell_fact()
+    elif("nice to meet you" in command):
+        speak("It's nice to meet you too")
+    elif("what's the time" in command) or ("what time is it" in command):
+        now = datetime.datetime.now()
+        hour = now.hour
+        minute = now.minute        
+        conjunction = ""
 
-            #index outside bounds error needs looking at here
-            random_number = random.randint(0, 15)
-            joke = str(lines[random_number])
-            if joke != "" and joke != " " and joke != "\n":
-                break
-        speak(joke)
-    elif("tell me a fact" in command) or ("give me a fact" in command) or ("let's hear a fact" in command):
-        #generate random number
-        f = open('./resources/facts.txt')
-        fact = ""
-        lines = f.readlines()
-        #ensure MAIVA responds with something
-        while True:
+        #convert to 12 hour for ease of MAIVA speech
+        if hour > 12:
+            hour = hour - 12
+        elif hour == 0:
+            hour = 12
+            
+        if minute > 30:
+            minute = 60 - minute
+            hour = hour + 1
+            conjunction = "to"
+        else:
+            conjunction = "past"
+            
+        #only need the ones below 30 becuase of the above if / elif
+        if (minute == 10):
+            speak ("It's currently ten " + str(conjunction) + str(hour))
+        elif(minute == 15):
+            speak ("It's currently quarter " + str(conjunction) + str(hour))
+        elif(minute == 30):
+            speak ("It's currently half " + str(conjunction) + str(hour))
+        elif(minute == 20):
+            speak ("It's currently twenty " + str(conjunction) + str(hour))
+        else:
+            speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + str(hour))
 
-            #index outside bounds error needs looking at here
-            random_number = random.randint(0, 15)
-            fact = str(lines[random_number])
-            if fact != "" and fact != " " and fact != "\n":
-                break
-        speak(fact)
+
+
+            
+      
+    elif("hey" in command) or ("hi" in command):
+        speak("Hi")
     else:
-        speak("I'm not sure I understood you")
+        speak("I'm not sure I understood you")  
         
     
-        
-        
     
+def tell_joke():
+    speak("Get ready to laugh")
+    #generate random number
+    f = open('./resources/jokes.txt')
+    joke = ""
+    lines = f.readlines()
+    #ensure MAIVA responds with something
+    while True:
+        #index outside bounds error needs looking at here
+        random_number = random.randint(0, 15)
+        joke = str(lines[random_number])
+        if joke != "" and joke != " " and joke != "\n":
+            break
         
+    ##check if joke is a knock knock joke to split based on question mark and sleep between the two sentences
+    if "knock knock" in joke:
+        parts = joke.split("?")
+        #call method for a specific response to carry out the knock knock joke here
+    else:
+        speak(joke)
+    f.close()
     
+def tell_fact():
+    #generate random number
+    f = open('./resources/facts.txt')
+    fact = ""
+    lines = f.readlines()
+    #ensure MAIVA responds with something
+    while True:
+
+        #index outside bounds error needs looking at here
+        random_number = random.randint(0, 115)
+        fact = str(lines[random_number])
+        if fact != "" and fact != " " and fact != "\n":
+            break
+    speak(fact)
+    f.close()
+    
+def tell_random():
+    f = open('./resources/coolstuff.txt')
+    interesting = ""
+    lines = f.readlines()
+    #ensure MAIVA responds with something
+    while True:
+        #index outside bounds error needs looking at here
+        random_number = random.randint(0, 90)
+        interesting = str(lines[random_number])
+        if interesting != "" and interesting != " " and interesting != "\n":
+            break
+    speak(interesting)
 
 '''
 Function to save the MAIVA response audio
