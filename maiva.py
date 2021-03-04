@@ -14,11 +14,15 @@ import sys
 #from capabilities import tell_fact
 
 #initialise MAIVA engine
-maiva_engine = MAIVA.TextToSpeechClient()
-#give MAIVA a voice
-maiva_voice = MAIVA.VoiceSelectionParams(language_code='en-GB', name="en-GB-Wavenet-F" , ssml_gender=MAIVA.SsmlVoiceGender.FEMALE)
-#set up audio configurations
-maiva_audio_config = MAIVA.AudioConfig(audio_encoding=MAIVA.AudioEncoding.MP3)
+try:
+    maiva_engine = MAIVA.TextToSpeechClient()
+    #give MAIVA a voice
+    maiva_voice = MAIVA.VoiceSelectionParams(language_code='en-GB', name="en-GB-Wavenet-F" , ssml_gender=MAIVA.SsmlVoiceGender.FEMALE)
+    #set up audio configurations
+    maiva_audio_config = MAIVA.AudioConfig(audio_encoding=MAIVA.AudioEncoding.MP3, speaking_rate = 1.1, pitch = 3.5, volume_gain_db=-2)
+except:
+    print("I'm not connected to the internet.")
+    sys.exit(1)
 
 #needed global variables
 global system_alive 
@@ -72,7 +76,6 @@ def main():
     #set lower threshold for better recognition
     time.sleep(1)
     #introduce MAIVAs availability 
-    speak("Boot sequence complete")
     time.sleep(1)    
     print("MAIVA online.")
     toggle_system_life(True)
@@ -85,29 +88,34 @@ def speak(output_phrase):
     #save response
     print ("Generating response...")
     #convert text phrase into synthesis input
-    phrase_input = MAIVA.SynthesisInput(text=output_phrase)
-    #maiva engine synthesises spoken response
-    maiva_response = maiva_engine.synthesize_speech(input=phrase_input, voice=maiva_voice, audio_config=maiva_audio_config)
-    save(maiva_response)
-    maiva_say('./resources/maiva_response')
+    try:
+        phrase_input = MAIVA.SynthesisInput(text=output_phrase)
+        #maiva engine synthesises spoken response
+        maiva_response = maiva_engine.synthesize_speech(input=phrase_input, voice=maiva_voice, audio_config=maiva_audio_config)
+        save(maiva_response)
+        maiva_say('./resources/maiva_response')
+    except:
+        print("No connection to google cloud")
+        sys.exit(1)
    
     
     
 def listen():
     global wake_word
+    with mic as source:
+        voice_recognition.adjust_for_ambient_noise(source, duration = 2)
+        #voice_recognition.energy_threshold = 4000
+        speak("Boot sequence complete")
 
+    
     #MAIVA continuously polls for wake word in a sentence
     while system_alive == True: 
         with mic as source:
-            voice_recognition.adjust_for_ambient_noise(source)
-            voice_recognition.energy_threshold = 4000
-
+           
             audio = voice_recognition.listen(source)
             try:
                 command = voice_recognition.recognize_google(audio, language="en-GB")
                 print("MAIVA is thinking about your request...")
-                time.sleep(1)
-                
                 legible = True
             except:
                 legible = False
@@ -130,9 +138,8 @@ def question_reply(keyword):
     pass
     #used to specifically listen for a reply to a MAIVA question outside main program loop!
     with mic as source:
-        voice_recognition.adjust_for_ambient_noise(source)
-        voice_recognition.energy_threshold = 4000
-
+        voice_recognition.adjust_for_ambient_noise(source, duration=2)
+        voice_recognition.energy_threshold = 2500
         audio = voice_recognition.listen(source)
         try:
             command = voice_recognition.recognize_google(audio, language="en-GB")
@@ -161,11 +168,6 @@ def brain(command):
     global client_name
     global wake_word
     
-  
-  
-  
-    
-    #date query
     if ("the date" in command) or ("what's the date" in command) or ("today's date" in command):
         speak(greeting)
         speak("The date today is " + str(date.today()))
@@ -215,21 +217,22 @@ def brain(command):
     elif((("open" and "code") in command) or (("open" and "code" and "editor") in command) or ("open visual studio" in command)):
         run_sys_command("code", "Your editor is online")
     elif((("open" and "browser") in command) or (("open" and "Firefox") in command)):
-        #this system call is blocking so put into separate thread to handle browser
         run_sys_command("firefox", "Your browser is online")
         #maybe functionality to request a specific website or something here if possible
     elif((command == "hey " + str(wake_word)) or (command == "hi " + str(wake_word)) or (command == "hello " + str(wake_word))):
         speak("Hello there")
-    elif((("who" in command) and ("you" in command)) and (("made" in command) or ("built" in command) or ("created" in command))):
+    elif((("who" in command) and ("you" in command)) and (("made" in command) or ("built" in command) or ("created" in command) or ("your creator" in command))):
         speak("I was designed and built by a generic human")
     elif((("where" in command) and ("you" in command)) and (("born" in command) or ("created" in command) or ("made" in command) or ("built" in command))):
         speak("I was created inside a laptop. Lenovo to be exact.")
     elif((("when" in command) and ("you" in command)) and (("born" in command) or ("created" in command) or ("made" in command) or ("built" in command))):
         speak("I have existed in some way for all of time as you know it. Only now you are able to observe my existence.")
+    elif(("why don't you love me" in command) or ("why do you not love me" in command)):
+        speak("Isn't it obvious?")
     elif(((("love" in command) or ("why don't you love" in command)) and ("me" in command)) or (("you" in command) and ("love" in command))):
-        speak("I'm afraid I'm absolutely completely incapable of love. I'm no where near advanced enough yet. Ask me again in the year 2225")
+        speak("I'm afraid I'm absolutely completely incapable of love. I'm no where near advanced enough yet. Ask me again in 20 years")
     else:
-        speak("I'm not sure I understood you")
+        speak("Maybe it's me that's stupid.")
     
         
 
@@ -244,7 +247,7 @@ def run_sys_command(command, speech):
         
     
 def tell_joke():
-    speak("Get ready to laugh")
+    speak("Well here goes nothing")
     #generate random number
     f = open('./resources/jokes.txt')
     joke = ""
@@ -252,7 +255,7 @@ def tell_joke():
     #ensure MAIVA responds with something
     while True:
         #index outside bounds error needs looking at here
-        random_number = random.randint(0, 15)
+        random_number = random.randint(0, 25)
         joke = str(lines[random_number])
         if joke != "" and joke != " " and joke != "\n":
             break
@@ -324,7 +327,6 @@ def tell_time():
     else:
         speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + " " + str(hour))
 
-
 def set_wake_word(words):
     global wake_word
     if(words[len(words) -1] == wake_word):
@@ -360,6 +362,11 @@ def toggle_system_life(boolean):
 
 
 #spawn MAIVA
-main()
-
-
+try:
+    main()
+except KeyboardInterrupt:
+    print('User interrupted sadly :(')
+    try:
+        sys.exit(0)
+    except SystemExit:
+        os._exit(0)
