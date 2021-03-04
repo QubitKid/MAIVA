@@ -161,6 +161,10 @@ def brain(command):
     global client_name
     global wake_word
     
+  
+  
+  
+    
     #date query
     if ("the date" in command) or ("what's the date" in command) or ("today's date" in command):
         speak(greeting)
@@ -216,10 +220,19 @@ def brain(command):
         #maybe functionality to request a specific website or something here if possible
     elif((command == "hey " + str(wake_word)) or (command == "hi " + str(wake_word)) or (command == "hello " + str(wake_word))):
         speak("Hello there")
+    elif((("who" in command) and ("you" in command)) and (("made" in command) or ("built" in command) or ("created" in command))):
+        speak("I was designed and built by a generic human")
+    elif((("where" in command) and ("you" in command)) and (("born" in command) or ("created" in command) or ("made" in command) or ("built" in command))):
+        speak("I was created inside a laptop. Lenovo to be exact.")
+    elif((("when" in command) and ("you" in command)) and (("born" in command) or ("created" in command) or ("made" in command) or ("built" in command))):
+        speak("I have existed in some way for all of time as you know it. Only now you are able to observe my existence.")
+    elif(((("love" in command) or ("why don't you love" in command)) and ("me" in command)) or (("you" in command) and ("love" in command))):
+        speak("I'm afraid I'm absolutely completely incapable of love. I'm no where near advanced enough yet. Ask me again in the year 2225")
     else:
         speak("I'm not sure I understood you")
-        pass
+    
         
+
 
     
 def run_sys_command(command, speech):
