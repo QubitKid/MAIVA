@@ -1,5 +1,5 @@
 # MAIVA
-**MAIVA** is an at home AI voice assistant.
+**MAIVA** is an at home AI voice assistant for my linux machine.
 
 Development in progress to control smart devices, play music, answer general questions, and develop routines.
 Also plan to build up resilience to tonal changes over time.
@@ -20,6 +20,9 @@ Current capabilities as of 4/3/21:
 * open new browser
 * answer creation and who/where/when MAIVA was made questions
 * generic bing search for questions that are not understood
+* take screenshot
+* open file explorer
+* open spotify
 
   
 
