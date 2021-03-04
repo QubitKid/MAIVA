@@ -55,6 +55,9 @@ legible = False
 
 '''calendar events'''
 
+
+'''play some x feature'''
+
 #### ======= TO DO ======== ####
 
 
@@ -199,17 +202,17 @@ def brain(command):
         speak("I'll sort that for you sir.")
         bashCommand = "python ../cera_liker.py"
         os.system(bashCommand)
-    elif("something interesting" in command) or ("something cool" in command):
+    elif("something random" in command) or ("something cool" in command):
         #generate random number
         tell_random()
     elif("something funny" in command) or ("tell me a joke" in command) or ("make me laugh" in command) or ("cheer me up" in command):
         tell_joke()
-    elif("tell me a fact" in command) or ("give me a fact" in command) or ("let's hear a fact" in command) or ("a cool fact" in command):
+    elif(("tell" and "fact") or ("tell" and "interesting") in command):
         speak(greeting)
         tell_fact()
     elif("nice to meet you" in command):
         speak("It's nice to meet you too")
-    elif("what's the time" in command) or ("what time is it" in command):
+    elif("what" and "is" and "time" in command):
         now = datetime.datetime.now()
         hour = now.hour
         minute = now.minute        
@@ -230,15 +233,15 @@ def brain(command):
             
         #only need the ones below 30 becuase of the above if / elif
         if (minute == 10):
-            speak ("It's currently ten " + str(conjunction) + str(hour))
+            speak ("It's currently ten " + str(conjunction) + " " + str(hour))
         elif(minute == 15):
-            speak ("It's currently quarter " + str(conjunction) + str(hour))
+            speak ("It's currently quarter " + str(conjunction) + " " + str(hour))
         elif(minute == 30):
-            speak ("It's currently half " + str(conjunction) + str(hour))
+            speak ("It's currently half " + str(conjunction) + " " + str(hour))
         elif(minute == 20):
-            speak ("It's currently twenty " + str(conjunction) + str(hour))
+            speak ("It's currently twenty " + str(conjunction) + " " + str(hour))
         else:
-            speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + str(hour))
+            speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + " " + str(hour))
 
 
 
