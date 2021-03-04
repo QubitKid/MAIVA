@@ -137,20 +137,7 @@ def listen():
 def question_reply(keyword):
     pass
     #used to specifically listen for a reply to a MAIVA question outside main program loop!
-    with mic as source:
-        voice_recognition.adjust_for_ambient_noise(source, duration=2)
-        voice_recognition.energy_threshold = 2500
-        audio = voice_recognition.listen(source)
-        try:
-            command = voice_recognition.recognize_google(audio, language="en-GB")
-            legible = True
-        except:
-            legible = False
-            
-        if legible:
-            #check if the legible sentence contains the wake word
-            if (keyword in command.lower()):
-                pass
+ 
     
     
 #process legible command    
@@ -233,6 +220,7 @@ def brain(command):
         speak("I'm afraid I'm absolutely completely incapable of love. I'm no where near advanced enough yet. Ask me again in 20 years")
     else:
         speak("Maybe it's me that's stupid.")
+        run_sys_command("firefox https://www.bing.com/search?q=" + str(command.replace(wake_word, "").replace(" ", "%20")), "Here's what I found on the web for that though")
     
         
 
@@ -241,7 +229,9 @@ def brain(command):
 def run_sys_command(command, speech):
     bashCommand = command
     speak(speech)
-    subprocess.Popen([bashCommand])
+    print (bashCommand)
+    subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+    #subprocess.Popen([bashCommand])
     
     
         
