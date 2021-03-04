@@ -207,48 +207,23 @@ def brain(command):
         tell_random()
     elif("something funny" in command) or ("tell me a joke" in command) or ("make me laugh" in command) or ("cheer me up" in command):
         tell_joke()
-    elif(("tell" and "fact") or ("tell" and "interesting") in command):
+    elif((("tell" and "a fact") in command) or (("tell" and "something interesting") in command) or (("tell" and "fact") in command)):
         speak(greeting)
         tell_fact()
     elif("nice to meet you" in command):
         speak("It's nice to meet you too")
-    elif("what" and "is" and "time" in command):
-        now = datetime.datetime.now()
-        hour = now.hour
-        minute = now.minute        
-        conjunction = ""
-
-        #convert to 12 hour for ease of MAIVA speech
-        if hour > 12:
-            hour = hour - 12
-        elif hour == 0:
-            hour = 12
-            
-        if minute > 30:
-            minute = 60 - minute
-            hour = hour + 1
-            conjunction = "to"
-        else:
-            conjunction = "past"
-            
-        #only need the ones below 30 becuase of the above if / elif
-        if (minute == 10):
-            speak ("It's currently ten " + str(conjunction) + " " + str(hour))
-        elif(minute == 15):
-            speak ("It's currently quarter " + str(conjunction) + " " + str(hour))
-        elif(minute == 30):
-            speak ("It's currently half " + str(conjunction) + " " + str(hour))
-        elif(minute == 20):
-            speak ("It's currently twenty " + str(conjunction) + " " + str(hour))
-        else:
-            speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + " " + str(hour))
-
-
-
-            
-      
-    elif("hey" in command) or ("hi" in command):
-        speak("Hi")
+    elif((("what" and "is" and "time") in command) or (("what's the time") in command)):
+        tell_time()
+    elif((("open" and "code") in command) or (("open" and "code" and "editor") in command)):
+        bashCommand = "code"
+        os.system(bashCommand)
+        #maybe functionality to request a specific file or something here if possible
+        speak("Your code editor awaits")
+    elif((("open" and "browser") in command) or (("open" and "firefox") in command)):
+        bashCommand = "firefox"
+        os.system(bashCommand)
+        #maybe functionality to request a specific file or something here if possible
+        speak("New browser opened")
     else:
         speak("I'm not sure I understood you")  
         
@@ -304,6 +279,38 @@ def tell_random():
         if interesting != "" and interesting != " " and interesting != "\n":
             break
     speak(interesting)
+
+def tell_time():
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute        
+    conjunction = ""
+
+    #convert to 12 hour for ease of MAIVA speech
+    if hour > 12:
+        hour = hour - 12
+    elif hour == 0:
+        hour = 12
+        
+    if minute > 30:
+        minute = 60 - minute
+        hour = hour + 1
+        conjunction = "to"
+    else:
+        conjunction = "past"
+        
+    #only need the ones below 30 becuase of the above if / elif
+    if (minute == 10):
+        speak ("It's currently ten " + str(conjunction) + " " + str(hour))
+    elif(minute == 15):
+        speak ("It's currently quarter " + str(conjunction) + " " + str(hour))
+    elif(minute == 30):
+        speak ("It's currently half " + str(conjunction) + " " + str(hour))
+    elif(minute == 20):
+        speak ("It's currently twenty " + str(conjunction) + " " + str(hour))
+    else:
+        speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + " " + str(hour))
+
 
 '''
 Function to save the MAIVA response audio
