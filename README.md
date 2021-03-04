@@ -4,7 +4,7 @@
 Development in progress to control smart devices, play music, answer general questions, and develop routines.
 Also plan to build up resilience to tonal changes over time.
 
-Current capabilities as of 3/3/21:
+Current capabilities as of 4/3/21:
 
 * date readout
 * name readout
@@ -18,6 +18,8 @@ Current capabilities as of 3/3/21:
 * current time read out
 * open VS code
 * open new browser
+* answer creation and who/where/when MAIVA was made questions
+
   
 
 Building started 2/3/21.
