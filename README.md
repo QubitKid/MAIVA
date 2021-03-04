@@ -16,6 +16,7 @@ Current capabilities as of 3/3/21:
 * tell something interesting
 * alter user name
 * current time read out
+* open VS code
   
 
 Building started 2/3/21.
