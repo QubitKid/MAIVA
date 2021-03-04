@@ -17,6 +17,7 @@ Current capabilities as of 3/3/21:
 * alter user name
 * current time read out
 * open VS code
+* open new browser
   
 
 Building started 2/3/21.
