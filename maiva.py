@@ -8,6 +8,9 @@ import speech_recognition as sr
 from datetime import date
 import datetime
 import random
+import subprocess
+import threading
+import sys
 #from capabilities import tell_fact
 
 #initialise MAIVA engine
@@ -119,6 +122,7 @@ def listen():
                     print("Wake word not detected sorry")
     
     print("It was nice being real.")
+    sys.exit(1)
     
     
     
@@ -161,7 +165,7 @@ def brain(command):
     if ("the date" in command) or ("what's the date" in command) or ("today's date" in command):
         speak(greeting)
         speak("The date today is " + str(date.today()))
-    elif ("power down" in command) or ("shut down" in command) or ("power off" in command) or ("die " + str(wake_word) + "" in command):
+    elif ("power down" in command) or ("shut down" in command) or ("power off" in command) or ("die " + str(wake_word) + "" in command) or ("shutdown" in command):
         toggle_system_life(False)
         speak("Certainly")
     elif("what's my name" in command) or ("what is my name" in command) or ("tell me my name" in command):
@@ -186,18 +190,8 @@ def brain(command):
             speak("I had difficulty understanding that")        
     elif("set wake word to" in command) or ("wake up to" in command) or ("new wake word is" in command):
         speak(greeting)
-
         words = command.split()
-        if(words[len(words) -1] == wake_word):
-            temp_wake_word = words[len(words) - 2]
-        else:
-            temp_wake_word = words[len(words) - 1]
-
-        if any(char.isdigit() for char in temp_wake_word) == False:
-            wake_word = temp_wake_word
-            speak ("New wake word set")
-        else:
-            speak("Wake word not possible")
+        set_wake_word(words)
     elif ("who is the king" in command) or ("like cera post" in command) or ("king" in command) or ("run cera liker" in command) or ("like michael cera's post" in command):
         speak("I'll sort that for you sir.")
         bashCommand = "python ../cera_liker.py"
@@ -214,20 +208,27 @@ def brain(command):
         speak("It's nice to meet you too")
     elif((("what" and "is" and "time") in command) or (("what's the time") in command)):
         tell_time()
-    elif((("open" and "code") in command) or (("open" and "code" and "editor") in command)):
-        bashCommand = "code"
-        os.system(bashCommand)
-        #maybe functionality to request a specific file or something here if possible
-        speak("Your code editor awaits")
-    elif((("open" and "browser") in command) or (("open" and "firefox") in command)):
-        bashCommand = "firefox"
-        os.system(bashCommand)
-        #maybe functionality to request a specific file or something here if possible
-        speak("New browser opened")
+    elif((("open" and "code") in command) or (("open" and "code" and "editor") in command) or ("open visual studio" in command)):
+        run_sys_command("code", "Your editor is online")
+    elif((("open" and "browser") in command) or (("open" and "Firefox") in command)):
+        #this system call is blocking so put into separate thread to handle browser
+        run_sys_command("firefox", "Your browser is online")
+        #maybe functionality to request a specific website or something here if possible
+    elif((command == "hey " + str(wake_word)) or (command == "hi " + str(wake_word)) or (command == "hello " + str(wake_word))):
+        speak("Hello there")
     else:
-        speak("I'm not sure I understood you")  
+        speak("I'm not sure I understood you")
+        pass
         
+
     
+def run_sys_command(command, speech):
+    bashCommand = command
+    speak(speech)
+    subprocess.Popen([bashCommand])
+    
+    
+        
     
 def tell_joke():
     speak("Get ready to laugh")
@@ -258,7 +259,6 @@ def tell_fact():
     lines = f.readlines()
     #ensure MAIVA responds with something
     while True:
-
         #index outside bounds error needs looking at here
         random_number = random.randint(0, 115)
         fact = str(lines[random_number])
@@ -311,6 +311,19 @@ def tell_time():
     else:
         speak ("It's currently " + str(minute) + " minutes " + str(conjunction) + " " + str(hour))
 
+
+def set_wake_word(words):
+    global wake_word
+    if(words[len(words) -1] == wake_word):
+        temp_wake_word = words[len(words) - 2]
+    else:
+        temp_wake_word = words[len(words) - 1]
+
+    if any(char.isdigit() for char in temp_wake_word) == False:
+        wake_word = temp_wake_word
+        speak ("New wake word set")
+    else:
+        speak("Wake word not possible")
 
 '''
 Function to save the MAIVA response audio
