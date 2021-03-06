@@ -19,7 +19,7 @@ Current capabilities as of 6/3/21:
 * open VS code
 * open new browser
 * answer creation and who/where/when MAIVA was made questions
-* generic bing search for questions that are not understood
+* internet search that opens a browser
 * take screenshot
 * open file explorer
 * open spotify
