@@ -177,7 +177,7 @@ def brain(command):
         toggle_system_life(False)
         speak("Certainly")
         ran_command = True
-    if("what's my name" in command) or ("what is my name" in command) or ("tell me my name" in command):
+    if((("what" in command) or ("what's" in command)) and (("my" in command) or ("am i" in command)) and (("called" in command) or ("name" in command)) or ("who am i" in command)):
         if client_name == ".":
             speak("I wish I knew. Please tell me.")
         else:
@@ -391,7 +391,7 @@ def tell_time():
     conjunction = ""
 
     #convert to 12 hour for ease of MAIVA speech
-    if hour > 12:
+    if hour >= 12:
         hour = hour - 12
     elif hour == 0:
         hour = 12
