@@ -23,6 +23,7 @@ Current capabilities as of 4/3/21:
 * take screenshot
 * open file explorer
 * open spotify
+* run a timer in minutes or seconds
 
   
 
