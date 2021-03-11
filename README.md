@@ -4,7 +4,7 @@
 Development in progress to control smart devices, play music, answer general questions, and develop routines.
 Also plan to build up resilience to tonal changes over time.
 
-Current capabilities as of 6/3/21:
+Current capabilities as of 11/3/21:
 
 * date readout
 * name readout
@@ -24,7 +24,7 @@ Current capabilities as of 6/3/21:
 * open file explorer
 * open spotify
 * run a timer in minutes or seconds
-
+* handle generic search queries aimed at online use
   
 
 Building started 2/3/21.
